@@ -1,0 +1,14 @@
+[Unit]
+Description=GuruDash Bridge Server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/admin/projects/gurudash/bridge
+ExecStart=/home/admin/projects/gurudash/bridge/venv/bin/uvicorn server:app --host 127.0.0.1 --port 18799
+Restart=on-failure
+RestartSec=5
+EnvironmentFile=/home/admin/projects/gurudash/bridge/.env
+
+[Install]
+WantedBy=default.target
