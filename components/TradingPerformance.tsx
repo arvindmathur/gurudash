@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { PerformanceData, PhaseRow, WeeklyRow } from '@/lib/types';
 import { useAutoRefresh } from '@/lib/hooks/useAutoRefresh';
 import { ModuleCard } from './ModuleCard';
@@ -18,6 +19,7 @@ function pp(v: number) {
 
 export default function TradingPerformance() {
   const { data, error, lastFetchedAt, refresh } = useAutoRefresh<PerformanceData>('/api/performance', 300000);
+  const [view, setView] = useState<'phases' | 'weekly'>('phases');
 
   if (!data?.available) {
     return (
@@ -30,9 +32,6 @@ export default function TradingPerformance() {
   }
 
   const s = data.summary;
-  const [view, setView] = (typeof window !== 'undefined'
-    ? require('react').useState
-    : (v: string) => [v, () => {}])('phases') as [string, (v: string) => void];
 
   return (
     <ModuleCard title="MR Paper Trade Performance" lastFetched={lastFetchedAt} error={!!error} onRefresh={refresh}>
@@ -62,34 +61,30 @@ export default function TradingPerformance() {
           </div>
         </div>
 
-        {/* Mini equity sparkline (SVG) */}
+        {/* Mini equity sparkline */}
         <MiniChart data={data.equityCurve} />
 
         {/* Tab toggle */}
         <div className="flex gap-2">
-          {['phases', 'weekly'].map(tab => (
+          {(['phases', 'weekly'] as const).map(tab => (
             <button
               key={tab}
-              onClick={() => view !== tab && refresh()}
+              onClick={() => setView(tab)}
               className={`text-xs px-3 py-1 rounded-full border transition-colors ${
                 view === tab
                   ? 'bg-indigo-600 border-indigo-500 text-white'
                   : 'border-gray-700 text-gray-400 hover:border-gray-500'
               }`}
-              // use data attr trick to toggle without useState import issues
-              data-tab={tab}
-              id={`perf-tab-${tab}`}
             >
               {tab === 'phases' ? 'Phases' : 'Weekly'}
             </button>
           ))}
         </div>
 
-        {/* Phase table */}
-        <PhasesTable phases={data.phases} startDate={data.startDate} endDate={data.endDate} />
-
-        {/* Weekly table */}
-        <WeeklyTable weekly={data.weekly} />
+        {/* Content */}
+        {view === 'phases'
+          ? <PhasesTable phases={data.phases} />
+          : <WeeklyTable weekly={data.weekly} />}
 
         <div className="text-xs text-gray-600 pt-1">
           {data.tradingDays} trading days · {data.startDate} → {data.endDate}
@@ -136,7 +131,7 @@ function MiniChart({ data }: { data: PerformanceData['equityCurve'] }) {
   );
 }
 
-function PhasesTable({ phases, startDate, endDate }: { phases: PhaseRow[]; startDate: string; endDate: string }) {
+function PhasesTable({ phases }: { phases: PhaseRow[] }) {
   return (
     <div>
       <div className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide">Phase Analysis</div>
