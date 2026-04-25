@@ -8,6 +8,7 @@ import ActiveMission from '@/components/ActiveMission';
 import ProjectBoard from '@/components/ProjectBoard';
 import ModelSentinel from '@/components/ModelSentinel';
 import TodayActivity from '@/components/TodayActivity';
+import TradingPerformance from '@/components/TradingPerformance';
 
 export default function Dashboard() {
   const [lastUpdated, setLastUpdated] = useState<string>('');
@@ -53,6 +54,7 @@ export default function Dashboard() {
         {/* Column 2: Operations */}
         <div className="space-y-4 md:space-y-6">
           <TradingOps />
+          <TradingPerformance />
           <ActiveMission />
           <TodayActivity />
         </div>

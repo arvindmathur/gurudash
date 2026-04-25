@@ -174,5 +174,39 @@ export interface PlanItem {
   lineNumber: number;
 }
 
+// Module 8: Trading Performance
+export interface PerformanceData {
+  available: boolean;
+  reason?: string;
+  generatedAt: string;
+  startDate: string;
+  endDate: string;
+  tradingDays: number;
+  summary: {
+    mr: number; spy: number; qqq: number;
+    vsSpy: number; vsQqq: number;
+    mrMaxDrawdown: number; spyMaxDrawdown: number; qqqMaxDrawdown: number;
+    currentEquity: number;
+  };
+  phases: PhaseRow[];
+  weekly: WeeklyRow[];
+  equityCurve: EquityPoint[];
+  fetchedAt: string;
+}
+
+export interface PhaseRow {
+  name: string; start: string; end: string;
+  mr: number; spy: number; qqq: number;
+  vs_spy: number; vs_qqq: number;
+}
+
+export interface WeeklyRow {
+  week: string; mr: number; spy: number; qqq: number; vs_spy: number;
+}
+
+export interface EquityPoint {
+  date: string; mr: number; spy: number; qqq: number;
+}
+
 // Helper types
 export type RelativeTime = string; // for human-readable time strings

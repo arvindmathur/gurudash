@@ -635,3 +635,18 @@ def get_activity():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get('/performance', dependencies=[Depends(verify_token)])
+def get_performance():
+    """Return MR paper trade performance data from pre-generated JSON."""
+    try:
+        perf_path = Path('/home/admin/.openclaw/workspace/projects/GuruTrade/data/analysis/mr_performance.json')
+        if not perf_path.exists():
+            return {'available': False, 'reason': 'no_data', 'fetchedAt': datetime.utcnow().isoformat() + 'Z'}
+        with open(perf_path) as f:
+            data = json.load(f)
+        data['available'] = True
+        data['fetchedAt'] = datetime.utcnow().isoformat() + 'Z'
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
